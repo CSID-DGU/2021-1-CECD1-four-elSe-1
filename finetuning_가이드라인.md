@@ -4,7 +4,7 @@
 
 # 1. 데이터셋 변환 
 (참고: https://www.tensorflow.org/tutorials/load_data/images?hl=ko)
-1. google drive에 있는 pretrained 된 가구 이미지 데이터와 라벨를 다운
+1. google drive에 있는 pretrained 된 가구 이미지 데이터와 라벨 다운
 2. 가구 이미지 데이터와 라벨을 이용해 training dataset으로 변환 
    (이때, 512x512 해상도로 전처리, class = {"러그", "수납장", "침대"})
    
