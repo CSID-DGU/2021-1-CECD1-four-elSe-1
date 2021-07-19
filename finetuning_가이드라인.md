@@ -10,7 +10,8 @@
    
 # 2. resnet 전이학습
 (참고: https://www.tensorflow.org/tutorials/images/transfer_learning?hl=ko)
-이미지 위치 정보 학슴 : https://github.com/fizyr/keras-retinanet 참고
+
+이미지 위치 정보 학습 : https://github.com/fizyr/keras-retinanet 참고
 
 # 3. retinanet
 이후 전이학습된 resnet을 "resnet50_coco_best_v2.1.0.h5" 대신 retinanet에 사용
