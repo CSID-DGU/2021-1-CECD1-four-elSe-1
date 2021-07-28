@@ -3,7 +3,7 @@ from multiprocessing import freeze_support
 import os
 import numpy as np
 import tensorflow as tf
-import keras
+#import keras
 from sklearn.neighbors import NearestNeighbors
 from src.CV_IO_utils import read_imgs_dir
 from src.CV_transform_utils import apply_transformer
@@ -14,7 +14,7 @@ from src.PretrainedModel import PretrainedModel
 from src.AbstractAE import AbstractAE
 from sklearn.decomposition import PCA
 
-from keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
 class ImageRetrievalClass:
     def __init__(self, modelName, trainModel, parallel):
@@ -56,7 +56,7 @@ class ImageRetrievalClass:
             self.input_shape_model = self.model.getInputshape()
             self.output_shape_model = self.model.getOutputshape()
         
-        elif self.modelName in ["vgg19", "ResNet50v2", "IncepResNet"]:
+        elif self.modelName in ["vgg19", "ResNet50v2", "IncepResNet","EfficientNet"]:
             pretrainedModel = PretrainedModel(self.modelName,self.shape_img)
             self.model = pretrainedModel.buildModel()
             self.shape_img_resize, self.input_shape_model, self.output_shape_model = pretrainedModel.makeInOut()
@@ -145,15 +145,14 @@ class ImageRetrievalClass:
 
         return calculator
     
-    def retrieval(self,E_test, calculator):
+    def retrieval(self,E_test_flatten, calculator):
         print("Performing image retrieval on test images...")
         
         # E_test_flatten = E_test.reshape((-1, np.prod(self.output_shape_model)))
-        for i, emb_flatten in enumerate(E_test):
+        for i, emb_flatten in enumerate(E_test_flatten):
             # find k nearest train neighbours
             _, indices = calculator.kneighbors([emb_flatten])
-            print("E_test.shape : ", E_test.shape)
-            print("len(imgs_test) : ", len(self.imgs_test))
+         
             img_query = self.imgs_test[i]  # query image
             imgs_retrieval = [self.imgs_train[idx]
                             for idx in indices.flatten()]  # retrieval images
