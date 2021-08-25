@@ -1,6 +1,6 @@
 from flask_restful import Resource, Api
 import requests
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from glob import glob 
 from PIL import Image
 import numpy as np
@@ -12,9 +12,9 @@ class Select(Resource):
         pass
     
     @staticmethod
-    def getSelectObject():
-        idx = int(request.args["idx"])
-        url = "http://127.0.0.1:5000/api/detection"
+    def getSelectObject(idx):
+        # idx = int(request.args["idx"])
+        url = "http://127.0.0.1:5050/api/detection"
         response = requests.get(url)
         detected_objectList = response.json()["detected_objectList"]
         selectObject = None
@@ -24,42 +24,6 @@ class Select(Resource):
         except IndexError as e:
             return e
 
-from ImageRetrievalClass import ImageRetrievalClass   
-class Retrieval(Resource):
-   
-    def get(self):
-        before = time.time()
-        selectObject = Select.getSelectObject()
-        
-        selectObject_path = selectObject["objectImagePath"]
-        selectObject_pil = Image.open(selectObject_path)
-        retrievalInstance = ImageRetrievalClass("IncepResNet", True, False)
-        retrievalInstance.readTestSet(selectObject_pil)
-        retrievalInstance.buildModel()
-
-        X_test = retrievalInstance.testTransform()
-
-        E_test = retrievalInstance.predictTest(X_test)
-        E_test_flatten = E_test.reshape((-1, np.prod(retrievalInstance.output_shape_model)))
-        tag = selectObject["tag"]
-        print("tag : ", tag)
-        
-        query = Query(tag)
-        E_train = query.get_E_train()
-        print("E_train.shape : ", E_train.shape)
-        E_train_flatten = E_train.reshape((-1, np.prod(retrievalInstance.output_shape_model)))
-        print("E_train_flatten.shape : ", E_train_flatten.shape)
-
-
-        calculator = retrievalInstance.similarityCalculator(E_train_flatten)
-        retrieval_imagePool = [Image.open(json["objectImagePath"]) for json in query.getQueryed_jsonList()]
-        retrievalInstance.retrieval(E_test_flatten,calculator,retrieval_imagePool)
-        after = time.time()
-        elapsed_time = after - before 
-        print("Retrieval completed")
-        return "Retrieval completed! " + str(round(elapsed_time, 2)) +"s"
-
-        
 
 
 
